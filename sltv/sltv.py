@@ -396,10 +396,15 @@ class Sltv(gobject.GObject):
             self.volume = volume.Volume()
             self.player.add(self.volume)
 
+            self.level = gst.element_factory_make("level", "audio_level")
+            self.level.set_property("message", True)
+            self.player.add(self.level)
+
             gst.element_link_many(
-                    self.input_selector, self.volume,
+                    self.input_selector, self.volume, self.level,
                     self.effect[MEDIA_AUDIO], self.convert, self.audio_tee
             )
+
             self.input_selector.set_property(
                     "active-pad", self.audio_pads[self.audio_source]
             )
@@ -516,7 +521,7 @@ class Sltv(gobject.GObject):
                         self.effect_name[effect_type]
                 )
                 Swap.swap_element(
-                        self.player, self.volume, self.convert,
+                        self.player, self.level, self.convert,
                         self.effect[effect_type], new_effect
                 )
                 self.effect[effect_type] = new_effect
@@ -590,6 +595,13 @@ class Sltv(gobject.GObject):
         if self.volume:
             self.volume.set_property("volume", value)
 
+    def clamp(self, x, min, max):
+        if x < min:
+            return min
+        elif x > max:
+            return max
+        return x
+
     def on_message(self, bus, message):
         t = message.type
         if t == gst.MESSAGE_EOS:
@@ -613,6 +625,16 @@ class Sltv(gobject.GObject):
             elif self.pending_state == gst.STATE_PLAYING:
                 self.emit("playing")
             self.pending_state = None
+        elif message.structure.get_name() == 'level':
+            s = message.structure
+            for i in range(0, len(s['peak'])):
+                self.vus[i].freeze_notify()
+                decay = self.clamp(s['decay'][i], -90.0, 0.0)
+                peak = self.clamp(s['peak'][i], -90.0, 0.0)
+                #if peak > decay:
+                    #print "ERROR: peak bigger than decay!"            
+                self.vus[i].set_property('decay', decay)
+                self.vus[i].set_property('peak', peak)
 
     def on_sync_message(self, bus, message):
         self.emit("sync-message", bus, message)

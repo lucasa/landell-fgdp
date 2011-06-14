@@ -41,6 +41,8 @@ import settings as settings
 import pip_widget
 import metadata
 
+import fvumeter
+
 class SltvUI:
 
     def __init__(self):
@@ -86,6 +88,19 @@ class SltvUI:
         self.volume_button = self.volume.get_widget()
         self.volume_button.show()
         self.hbuttonbox.pack_start(self.volume_button)
+
+        self.sltv.vus = []
+        meter = fvumeter.FVUMeter()
+        meter.only_draw_peak = True
+        self.sltv.vus.append(meter)
+        meter = fvumeter.FVUMeter()
+        self.sltv.vus.append(meter)
+        self.sltv.vus[0].show()
+        self.sltv.vus[1].show()
+        self.vumeter_box = self.interface.get_object("vumeter_box")
+        if self.vumeter_box:
+            self.vumeter_box.add(self.sltv.vus[0])
+            self.vumeter_box.add(self.sltv.vus[1])
 
         # pip
 

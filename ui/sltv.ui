@@ -249,6 +249,19 @@
                             <property name="position">0</property>
                           </packing>
                         </child>
+                        <child>
+                            <object class="GtkVBox" id="vumeter_box">
+                                        <property name="visible">True</property>
+                                        <property name="homogeneous">True</property>
+                                        <property name="layout_style">spread</property>
+                            </object>
+                            <packing>
+                                <property name="padding">1</property>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                            </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="position">0</property>
