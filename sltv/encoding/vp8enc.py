@@ -28,7 +28,7 @@ class VP8Encoder(Encoder):
 
     def __init__(self, type):
         Encoder.__init__(self, type)
-        self.mux = gst.element_factory_make("oggmux", "oggmux")
+        self.mux = gst.element_factory_make("webmmux", "oggmux")
         self.add(self.mux)
         self.vp8enc = None
         self.vorbisenc = None
@@ -62,5 +62,4 @@ class VP8Encoder(Encoder):
 
 
     def config(self, dict):
-        """NotImplemented"""
-        pass
+        self.mux.set_property('streamable', True)        

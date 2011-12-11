@@ -136,6 +136,13 @@ class FakeOutputFactory(SltvFactory):
         self.ui = ui.output.fakeoutput.FakeOutputUI()
         self.factory_class = output.fakeoutput.FakeOutput
 
+class FGDPOutputFactory(SltvFactory):
+    def __init__(self):
+        SltvFactory.__init__(self, "fgdp (flumotion)")
+        self.ui = ui.output.fgdpoutput.FGDPOutputUI()
+        self.factory_class = output.fgdpoutput.FGDPOutput
+
+
 class VideoConverterFactory(SltvFactory):
     def __init__(self):
         SltvFactory.__init__(self, "videoconv")
@@ -175,7 +182,7 @@ for i in input_factories:
     registry.registry.register_factory(REGISTRY_INPUT, i)
 
 output_factories = [
-        IcecastOutputFactory(), FileOutputFactory(), FakeOutputFactory()
+        IcecastOutputFactory(), FileOutputFactory(), FGDPOutputFactory(), FakeOutputFactory()
 ]
 
 for i in output_factories:

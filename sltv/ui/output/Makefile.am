@@ -4,6 +4,7 @@ sltvlib_DATA = \
 	core.py \
 	icecastoutput.py \
 	fileoutput.py \
-	fakeoutput.py
+	fakeoutput.py \
+	fgdpoutput.py
 
 EXTRA_DIST = $(sltvlib_DATA)
