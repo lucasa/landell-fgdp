@@ -23,6 +23,7 @@ import gst
 from core import Output
 from threading import Thread
 from multiprocessing import Process
+import fgdp
 try:
     import fgdp
 except:

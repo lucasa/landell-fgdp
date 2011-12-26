@@ -24,8 +24,6 @@ from twisted.protocols.basic import LineReceiver
 
 from Crypto.Hash import SHA
 
-from flumotion.common import log
-
 __version__ = "$Rev$"
 
 PROTOCOL_NAME = "FGDP"
@@ -195,7 +193,7 @@ class FGDP_0_1(object):
     CHALLENGE_RESPONSE = 'CHALLENGE'
 
 
-class FGDPBaseProtocol(LineReceiver, log.Loggable):
+class FGDPBaseProtocol(LineReceiver):
     """
     Base class for the twisted side of the FGDP protocol
     """
@@ -249,8 +247,7 @@ class FGDPBaseProtocol(LineReceiver, log.Loggable):
         self.startProtocol()
 
     def connectionLost(self, reason):
-        self.info("Connection lost with FGDP peer: %s",
-                  reason.getErrorMessage())
+        self.info("Connection lost with FGDP peer: %s" % str(reason.getErrorMessage()))
         self.stopProtocol(reason)
 
     def loseConnection(self):
@@ -271,7 +268,7 @@ class FGDPBaseProtocol(LineReceiver, log.Loggable):
 
     def _sendMessage(self, message, transport=None):
         transport = transport or self._transport
-        self.debug('Sending message: "%s"', message)
+        self.debug('Sending message: %s' % str(message))
         transport.write("%s\r\n" % message)
 
     def _disconnectFD(self, reason):
@@ -286,14 +283,19 @@ class FGDPBaseProtocol(LineReceiver, log.Loggable):
         reactor.removeReader(self._transport)
         self._gstElement.connectFd(self._fd)
         self._gstElement.emit('connected')
+        
+    def info(self, log):
+        print log
+    def debug(self, log):
+        print self.info(log)
+    def warning(self, log):
+        print self.info(log)
 
 
 class FGDPServer_0_1(FGDP_0_1, FGDPBaseProtocol):
     '''
     Implementation of the server-side FGDP protocol for version 0.1
     '''
-
-    logCategory = 'fgdp-server'
 
     SERVER_STATE_DISCONNECTED = "disconnected"
     SERVER_STATE_AUTHENTICATE = "authenticate"
@@ -367,7 +369,7 @@ class FGDPServer_0_1(FGDP_0_1, FGDPBaseProtocol):
             raise UnexpectedCommand(command.command)
 
     def _handleError(self, error):
-        self.warning("%s", error)
+        self.warning("%s" % str(error))
         response = Response(ErrorResponse, "Server error: %s" % error,
                             self._version)
         self._sendMessage(response)
@@ -402,8 +404,6 @@ class FGDPClient_0_1(FGDP_0_1, FGDPBaseProtocol):
     Implementation of the client-side FGDP protocol for version 0.1
     '''
 
-    logCategory = 'fgdp-client'
-
     CLIENT_STATE_DISCONNECTED = "disconnected"
     CLIENT_STATE_LOGIN = "login"
     CLIENT_STATE_AUTHENTICATING = "authenticate"
@@ -432,7 +432,7 @@ class FGDPClient_0_1(FGDP_0_1, FGDPBaseProtocol):
             response = Response.parseResponse(line)
             self._checkState(response)
         except (MalformedResponse, ErrorResponse, UnexpectedResponse), e:
-            self.warning("%s", e)
+            self.warning("%s"  % str(e))
             self.loseConnection()
             return
         # State LOGIN
@@ -455,14 +455,13 @@ class FGDPClient_0_1(FGDP_0_1, FGDPBaseProtocol):
             raise UnexpectedResponse(response.content)
 
     def _login(self):
-        self.info('Starting client login with user=%s, password=%s',
-                  self._user, self._password)
+        self.info('Starting client login with user='+self._user+' password='+self._password)
         self._state = self.CLIENT_STATE_LOGIN
         command = Command(self.LOGIN_COMMAND, self._user, self._version)
         self._sendMessage(command)
 
     def _authenticate(self, response):
-        self.info('Authenticating user with challenge %s', response.content)
+        self.info('Authenticating user with challenge %s' % str(response.content))
         self._state = self.CLIENT_STATE_AUTHENTICATING
         res = self._makeHash([self._user, self._password, response.content])
         command = Command(self.AUTH_COMMAND, res, self._version)
@@ -474,9 +473,8 @@ class FGDPClient_0_1(FGDP_0_1, FGDPBaseProtocol):
         self._delegateFD()
 
 
-class FGDPClientFactory(ReconnectingClientFactory, log.Loggable):
-    logCategory = 'fgdp-client'
-
+class FGDPClientFactory(ReconnectingClientFactory):
+    
     _supportedVersions = ['0.1']
 
     def __init__(self, gstElement):
@@ -497,7 +495,9 @@ class FGDPClientFactory(ReconnectingClientFactory, log.Loggable):
     def retry(self, connector=None):
         self.info("Trying reconnection with FGDP peer")
         return ReconnectingClientFactory.retry(self, connector)
-
+        
+    def info(self, log):
+        print log
 
 class FGDPServerFactory(Factory):
 

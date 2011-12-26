@@ -20,7 +20,7 @@ import gst
 
 from twisted.internet import reactor
 
-from flumotion.component.common.fgdp import protocol as fgdp
+import protocol as fgdp
 
 GDP_TYPE_PRODUCER = "producer-type"
 GDP_TYPE_CONSUMER = "consumer-type"

@@ -25,15 +25,6 @@ import gtk
 import os
 
 try:
-    FLUMOTION_PATH = '/usr/lib/flumotion/python/'
-    path = os.path.join(sys.argv[len(sys.argv)-1], 'flumotion')
-    if len(sys.argv) > 1:
-        if not os.path.exists(path):
-            print 'Error: Path', sys.argv[len(sys.argv)-1], ' is not a valid path of flumotion.'
-        else:
-            FLUMOTION_PATH = sys.argv[len(sys.argv)-1]
-    sys.path.insert(0, FLUMOTION_PATH)
-    #print 'FLUMOTION_PATH', FLUMOTION_PATH
     from twisted.internet import gtk2reactor
     gtk2reactor.install()
     from twisted.internet import reactor
