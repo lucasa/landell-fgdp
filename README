@@ -12,6 +12,14 @@ About:
 
   [0] http://en.wikipedia.org/wiki/Landell_de_Moura
 
+Atention:
+=======
+  This is a fork of the original Landell tool that integrates with the Flumotion Streaming Server 
+  [http://flumotion.net]. This fork creates a new type of output based on the FGDP protocol of flumotion.
+
+  The original Landell's git repository is: http://git.holoscopio.com/?p=sltv.git;a=summary
+
+
 License:
 ========
 
