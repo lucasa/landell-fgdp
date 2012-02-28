@@ -22,6 +22,7 @@ import effects
 import overlay
 import watermark
 import videobalance
+import microblog_overlay
 
 class SettingsUI:
 
@@ -37,6 +38,7 @@ class SettingsUI:
         self.overlay = overlay.OverlayUI(self.ui, self.sltv)
         self.watermark = watermark.WaterMarkUI(self.ui, self.sltv)
         self.videobalance = videobalance.VideoBalanceUI(self.ui, self.sltv)
+        self.microblog = microblog_overlay.MicroblogOverlayUI(self.ui, self.sltv)        
 
         self.effects_button = self.interface.get_object("effects_toolbutton")
         self.overlay_button = self.interface.get_object("overlay_toolbutton")
@@ -44,6 +46,7 @@ class SettingsUI:
         self.videobalance_button = self.interface.get_object(
                 "videobalance_toolbutton"
         )
+        self.microblog_button = self.interface.get_object("microblog_toolbutton")
 
         settings_group = gtk.ActionGroup("settings_group")
         settings_actions = [
@@ -55,6 +58,8 @@ class SettingsUI:
                 "Watermark", 2),
             ("videobalance_radioaction", "gtk-missing-image", "VideoBalance", None,
                 "Video Balance", 3),
+            ("microblog_radioaction", "gtk-missing-image", "Microblog Overlay", None,
+                "Microblog Overlay", 4),
         ]
         settings_group.add_radio_actions(
                 settings_actions, 0, self.on_settings_changed, None
@@ -79,6 +84,11 @@ class SettingsUI:
             "videobalance_radioaction"
         )
         self.videobalance_radioaction.connect_proxy(self.videobalance_button)
+        
+        self.microblog_radioaction = settings_group.get_action(
+            "microblog_radioaction"
+        )
+        self.microblog_radioaction.connect_proxy(self.microblog_button)
 
         self.selected_box = self.effects.get_widget()
         self.content.add(self.effects.get_widget())
@@ -97,6 +107,8 @@ class SettingsUI:
             self.selected_box = self.watermark.get_widget()
         elif name == "videobalance_radioaction":
             self.selected_box = self.videobalance.get_widget()
+        elif name == "microblog_radioaction":
+            self.selected_box = self.microblog.get_widget()
         else:
             self.selected_box = None
 

@@ -64,6 +64,19 @@
             <property name="homogeneous">True</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkRadioToolButton" id="microblog_toolbutton">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Microblog Overlay</property>
+            <property name="use_underline">True</property>
+            <property name="stock_id">gtk-orientation-landscape</property>
+            <property name="group">effects_toolbutton</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
       </object>
       <packing>
         <property name="expand">False</property>

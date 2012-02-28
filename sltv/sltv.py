@@ -114,6 +114,10 @@ class Sltv(gobject.GObject):
         self.videobalance_brightness = None
         self.videobalance_hue = None
         self.videobalance_saturation = None
+        
+        self.microblog_monitor = None
+        self.microblog_overlay = None
+        self.rsvg = None        
 
         self.input_type = 0
         self.output_bins = None
@@ -127,6 +131,11 @@ class Sltv(gobject.GObject):
         self.valign = valign
         if self.playing():
             self.overlay.set_property("valign", valign)
+    
+    def set_microblog_tag(self, tag):
+        self.microblog_tag = tag
+        if self.microblog_monitor:
+            self.microblog_monitor.set_tag(tag)
 
     def set_overlay_font(self, overlay_font):
         self.overlay_font = overlay_font
@@ -333,10 +342,10 @@ class Sltv(gobject.GObject):
             self.videobalance.set_property(
                     "saturation", self.videobalance_saturation
             )
+            
 
         gst.element_link_many(
-                self.pip, self.watermark, self.colorspace, self.videobalance,
-                self.queue_video
+                self.pip, self.watermark, self.colorspace, self.videobalance, self.queue_video
         )
 
         self._switch_source()
@@ -356,14 +365,22 @@ class Sltv(gobject.GObject):
         self.overlay.set_property("valign", self.valign)
         self.player.add(self.overlay)
 
+        # microblog overlay
+        self.microblog_overlay = gst.gst_parse_bin_from_description("textoverlay name=_i ! rsvgoverlay name=rsvg ! ffmpegcolorspace ! videorate ! videoscale ! queue name=_o", True)
+        i = self.microblog_overlay.get_by_name("_i");
+        o = self.microblog_overlay.get_by_name("_o");
+        self.rsvg = self.microblog_overlay.get_by_name("rsvg");
+        self.rsvg.set_property("data", '<svg width="100%" height="100%"></svg>')
+        self.player.add(self.microblog_overlay)
+        
         gst.element_link_many(
-                self.queue_video, self.effect[MEDIA_VIDEO], self.overlay
+                self.queue_video, self.effect[MEDIA_VIDEO], self.overlay, i,
         )
 
         self.preview_tee = multeequeue.MulTeeQueue()
         self.player.add(self.preview_tee)
 
-        self.overlay.link(self.preview_tee)
+        self.microblog_overlay.link(self.preview_tee)
 
         if self.input_type & MEDIA_AUDIO:
             self.convert = gst.element_factory_make("audioconvert", "convert")
