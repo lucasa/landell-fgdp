@@ -44,7 +44,10 @@ class MicroblogOverlayUI:
 
         self.hashtag_selector_entry = self.interface.get_object(
             "hashtag_entry"
-        )
+        )        
+        editable = getattr(twitter.Api(), "GetSearch", None) is not None
+        self.hashtag_selector_entry.set_editable(editable)
+        self.hashtag_selector_entry.set_can_focus(editable)
         
         self.interval_selector_entry = self.interface.get_object(
             "interval_entry"
@@ -168,7 +171,6 @@ class MicroblogOverlayUI:
         if s < 10:
             s = 10
         #print n, s
-        #<svg viewBox="0 0 400 100">
         #<tspan x="60" dy="1.2em">Teste</tspan>
         svg = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="rectPath" stroke="white" fill="none" d="M25,70 H165 M25,90 H165 M25,110 H165 M25,130 H165 M25,150 H165 M25,170 H165 M25,190 H165 M25,210 H165 M25,230 H165 M25,250 H165"/></defs><rect x="52" y="10" width="300" height="50" fill="none"/><text x="60" y="30" fill="black" font-size="'+str(s)+'">'+text+'</text><image x="5" y="10" width="50" height="50" xlink:href="'+img+'" /></svg>'
         self.sltv.rsvg.set_property("data", svg)
@@ -252,8 +254,7 @@ class UpdateStatus(Thread):
         self.active = True
         print "starting twitter's feed monitoring"
         while self.active:
-    #        image = "http://a0.twimg.com/profile_images/1804885134/profile_normal.png"
-            print "loading twitter feed", self.hashtag, self.user
+            #print "loading twitter feed", self.hashtag, self.user
             try:
                 if self.user:
                     statuses = self.api.GetUserTimeline(self.user)
@@ -263,22 +264,20 @@ class UpdateStatus(Thread):
                 print "Could not get a feed with this configuration"
                 return
             #print [s.AsJsonString() for s in statuses]
-            #print [help(s.user) for s in statuses]
             
             i = 0
             for s in statuses:
                 if self.active:
-                    url = s.user.profile_image_url            
-                    #text = str(s.now) + " - " + s.text
+                    url = s.user.profile_image_url
                     text = s.text
-        #            print "status", text            
                     self.callback("", "")
                     if self.download(url, self.file_out):
                         time.sleep(self.interval)
                         self.callback(text, self.file_out)
                         time.sleep(self.interval)
                     i = i+1
-
+            time.sleep(self.interval)
+        
     # http://stackoverflow.com/questions/862173/how-to-download-a-file-using-python-in-a-smarter-way
     def download(self, url, fileName=None):
         def getFileName(url,openUrl):

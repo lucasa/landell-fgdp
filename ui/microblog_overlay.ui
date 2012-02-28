@@ -17,8 +17,6 @@
             <property name="label" translatable="yes">Interval:</property>
           </object>
           <packing>
-            <property name="x_options">GTK_FILL</property>
-            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -30,9 +28,6 @@
             <property name="width_chars">10</property>
           </object>
           <packing>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">1</property>
-            <property name="y_options"></property>
           </packing>
         </child>
         <child>
@@ -41,8 +36,6 @@
             <property name="label" translatable="yes">Twitter User:</property>
           </object>
           <packing>
-            <property name="x_options">GTK_FILL</property>
-            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -54,9 +47,6 @@
             <property name="width_chars">10</property>
           </object>
           <packing>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">1</property>
-            <property name="y_options"></property>
           </packing>
         </child>
         <child>
@@ -65,8 +55,6 @@
             <property name="label" translatable="yes">Hashtag:</property>
           </object>
           <packing>
-            <property name="x_options">GTK_FILL</property>
-            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -78,9 +66,6 @@
             <property name="width_chars">10</property>
           </object>
           <packing>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
-            <property name="y_options"></property>
           </packing>
         </child>
       </object>
