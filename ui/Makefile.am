@@ -16,6 +16,7 @@ ui_DATA = edit.ui \
 	output.ui \
 	metadata.ui \
 	watermark.ui \
-	videobalance.ui
+	videobalance.ui \
+	microblog_overlay.ui
 
 EXTRA_DIST = $(ui_DATA)

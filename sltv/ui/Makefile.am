@@ -29,6 +29,7 @@ sltvlib_DATA = \
 	metadata.py \
 	watermark.py \
 	videobalance.py \
-	output_item.py
+	output_item.py \
+	microblog_overlay.py
 
 EXTRA_DIST = $(sltvlib_DATA)

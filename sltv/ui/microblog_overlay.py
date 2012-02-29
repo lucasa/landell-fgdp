@@ -111,6 +111,8 @@ class MicroblogOverlayUI:
                 self._set_valign(config_item['valign'])
             if "interval" in config_item:
                 self._set_interval(config_item['interval'])
+            if "username" in config_item:
+                self._set_interval(config_item['username'])
 
     def _set_valign(self, valign):
         self.valign = valign
@@ -172,12 +174,14 @@ class MicroblogOverlayUI:
             s = 10
         #print n, s
         #<tspan x="60" dy="1.2em">Teste</tspan>
-        svg = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="rectPath" stroke="white" fill="none" d="M25,70 H165 M25,90 H165 M25,110 H165 M25,130 H165 M25,150 H165 M25,170 H165 M25,190 H165 M25,210 H165 M25,230 H165 M25,250 H165"/></defs><rect x="52" y="10" width="300" height="50" fill="none"/><text x="60" y="30" fill="black" font-size="'+str(s)+'">'+text+'</text><image x="5" y="10" width="50" height="50" xlink:href="'+img+'" /></svg>'
+        if text and len(text) > 0:
+            svg = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect x="52" y="10" width="300" height="50" fill="white" style="fill-opacity:0.7"/><text x="60" y="30" fill="black" font-size="'+str(s)+'">'+text+'</text><image x="5" y="10" width="50" height="50" xlink:href="'+img+'" /></svg>'
+        else:
+            svg = '<svg width="100%" height="100%"></svg>'
         self.sltv.rsvg.set_property("data", svg)
         #print "svg updated"
 
     def apply_settings(self):
-        print "apply_settings"
         if self.update_status:
             self.update_status.stop()
             
@@ -228,14 +232,12 @@ class UpdateStatus(Thread):
         self.file_out = "/tmp/_landell_microblog_avatar.png"
         self.callback = callback
         self.api = twitter.Api()
-        #print help(self.api)
         self.active = False
-        print "monitoring thread created"
     
     def stop(self):
         self.callback("", "")
         self.active = False
-        print "monitoring thread stopped"
+        #print "monitoring thread stopped"
     
     def set_user(self, user):
         if user and len(user) > 0:
@@ -252,17 +254,12 @@ class UpdateStatus(Thread):
     def run(self):
         statuses = []
         self.active = True
-        print "starting twitter's feed monitoring"
+        #print "starting twitter's feed monitoring"
         while self.active:
-            #print "loading twitter feed", self.hashtag, self.user
-            try:
-                if self.user:
-                    statuses = self.api.GetUserTimeline(self.user)
-                elif self.hashtag:
-                    statuses = self.api.GetSearch(self.hashtag, page=1)
-            except:
-                print "Could not get a feed with this configuration"
-                return
+            if self.user:
+                statuses = self.api.GetUserTimeline(self.user)
+            elif self.hashtag:
+                statuses = self.api.GetSearch(self.hashtag, per_page=100)
             #print [s.AsJsonString() for s in statuses]
             
             i = 0
@@ -277,8 +274,7 @@ class UpdateStatus(Thread):
                         time.sleep(self.interval)
                     i = i+1
             time.sleep(self.interval)
-        
-    # http://stackoverflow.com/questions/862173/how-to-download-a-file-using-python-in-a-smarter-way
+            
     def download(self, url, fileName=None):
         def getFileName(url,openUrl):
             if 'Content-Disposition' in openUrl.info():

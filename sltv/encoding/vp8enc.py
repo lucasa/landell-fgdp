@@ -28,7 +28,7 @@ class VP8Encoder(Encoder):
 
     def __init__(self, type):
         Encoder.__init__(self, type)
-        self.mux = gst.element_factory_make("webmmux", "oggmux")
+        self.mux = gst.element_factory_make("webmmux", "webmmux")
         self.add(self.mux)
         self.vp8enc = None
         self.vorbisenc = None
@@ -62,4 +62,14 @@ class VP8Encoder(Encoder):
 
 
     def config(self, dict):
-        self.mux.set_property('streamable', True)        
+        self.mux.set_property('streamable', True)   
+        if self.vp8enc:
+            self.vp8enc.set_property("quality", int(dict["vp8_quality"]))
+            self.vp8enc.set_property("speed", int(dict["speed"]))
+            self.vp8enc.set_property("bitrate", int(dict["vp8_bitrate"]))
+            self.vp8enc.set_property("max-keyframe-distance", int(dict["max_keyframe_distance"]))
+            self.vp8enc.set_property("error-resilient", True)
+        if self.vorbisenc:
+            self.vorbisenc.set_property("quality", float(dict["vorbis_quality"]))
+            self.vorbisenc.set_property("bitrate", int(dict["vorbis_bitrate"]))
+            self.vorbisenc.set_property("bitrate", int(dict["vorbis_bitrate"]))     

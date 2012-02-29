@@ -21,6 +21,8 @@ import pygst
 pygst.require("0.10")
 import gst
 from core import Output
+import os
+import time
 
 class FileOutput(Output):
 
@@ -31,4 +33,10 @@ class FileOutput(Output):
         self.sink_pad.set_target(self.file_sink.sink_pads().next())
 
     def config(self, dict):
-        self.file_sink.set_property("location", dict["location"])
+        if os.path.exists(dict["location"]):
+            fs = os.path.split(dict["location"])
+            f = str(time.ctime(time.time())).replace(' ','_') + '_' + fs[1]
+            print "file ouput", dict["location"], "already exists, using", os.path.join(fs[0], f)
+            self.file_sink.set_property("location", os.path.join(fs[0], f))
+        else:
+            self.file_sink.set_property("location", dict["location"])

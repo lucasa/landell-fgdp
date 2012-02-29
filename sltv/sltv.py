@@ -366,11 +366,10 @@ class Sltv(gobject.GObject):
         self.player.add(self.overlay)
 
         # microblog overlay
-        self.microblog_overlay = gst.gst_parse_bin_from_description("textoverlay name=_i ! rsvgoverlay name=rsvg ! ffmpegcolorspace ! videorate ! videoscale ! queue name=_o", True)
+        self.microblog_overlay = gst.gst_parse_bin_from_description("ffmpegcolorspace name=_i ! rsvgoverlay name=rsvg ! queue name=_o", True)
         i = self.microblog_overlay.get_by_name("_i");
         o = self.microblog_overlay.get_by_name("_o");
         self.rsvg = self.microblog_overlay.get_by_name("rsvg");
-        self.rsvg.set_property("data", '<svg width="100%" height="100%"></svg>')
         self.player.add(self.microblog_overlay)
         
         gst.element_link_many(
