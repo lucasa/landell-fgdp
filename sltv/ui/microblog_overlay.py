@@ -168,18 +168,40 @@ class MicroblogOverlayUI:
          return self.interval_selector_entry.get_text()
 
     def update_config(self, text, img):
-        n = len(text)
-        s = 20 - n/10
-        if s < 10:
-            s = 10
-        #print n, s
-        #<tspan x="60" dy="1.2em">Teste</tspan>
-        if text and len(text) > 0:
-            svg = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect x="52" y="10" width="300" height="50" fill="white" style="fill-opacity:0.7"/><text x="60" y="30" fill="black" font-size="'+str(s)+'">'+text+'</text><image x="5" y="10" width="50" height="50" xlink:href="'+img+'" /></svg>'
+        font = 20
+        font = font - len(text)/12
+        if font < 10:
+            font = 10
+        #print len(text), font
+        
+        max_line = 50
+        words = text.split(' ')
+        lines = []
+        line = ''
+        for w in words:
+            if len(line) + len(w) < max_line:
+                line = line + ' ' + w
+            else:
+                lines.append(line)
+                line = w
+        lines.append(line)
+        
+        #print lines
+        text = ''
+        i = 0
+        for l in lines:
+            if len(l) > 0:
+                if i == 0:
+                    text = l
+                else:
+                    text = text + '<tspan x="60" dy="1.2em">' + l + '</tspan>'
+                i = i+1
+        
+        if len(text) > 0 and text != ' ':
+            svg = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect x="52" y="10" width="600" height="50" fill="white" style="fill-opacity:0.7"/><text x="60" y="25" fill="black" font-size="'+str(font)+'">'+text+'</text><image x="5" y="10" width="50" height="50" xlink:href="'+img+'" /></svg>'
         else:
             svg = '<svg width="100%" height="100%"></svg>'
         self.sltv.rsvg.set_property("data", svg)
-        #print "svg updated"
 
     def apply_settings(self):
         if self.update_status:
@@ -254,17 +276,19 @@ class UpdateStatus(Thread):
     def run(self):
         statuses = []
         self.active = True
-        #print "starting twitter's feed monitoring"
         while self.active:
             if self.user:
                 statuses = self.api.GetUserTimeline(self.user)
             elif self.hashtag:
-                statuses = self.api.GetSearch(self.hashtag, per_page=100)
-            #print [s.AsJsonString() for s in statuses]
+                statuses = self.api.GetSearch(self.hashtag, per_page=50)
             
             i = 0
             for s in statuses:
                 if self.active:
+                    #try:
+                    #    print s.AsJsonString()
+                    #except:
+                    #    pass
                     url = s.user.profile_image_url
                     text = s.text
                     self.callback("", "")
@@ -293,7 +317,6 @@ class UpdateStatus(Thread):
             fileName = fileName or getFileName(url,r)
             with open(fileName, 'wb') as f:
                 shutil.copyfileobj(r,f)
-            #print "file downloaded", fileName            
             return True
         except RuntimeError:
             return False

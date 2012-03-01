@@ -21,6 +21,8 @@ import pygst
 pygst.require("0.10")
 import gst
 from core import Input, INPUT_TYPE_AUDIO, INPUT_TYPE_VIDEO
+import os
+from sltv.utils import FileUtil
 
 CAPABILITIES = INPUT_TYPE_AUDIO | INPUT_TYPE_VIDEO
 
@@ -103,4 +105,8 @@ class DVInput(Input):
             gst.element_link_many(
                     self.tee, self.queue_save, self.filesink
             )
-            self.filesink.set_property("location", dict["filename"])
+            if os.path.exists(dict["filename"]):
+                print "DV file ouput", dict["filename"], "already exists, using", FileUtil.append_time_to_path(dict["filename"])
+                self.filesink.set_property("location", FileUtil.append_time_to_path(dict["filename"]))
+            else:
+                self.filesink.set_property("location", dict["filename"])

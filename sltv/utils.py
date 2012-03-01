@@ -16,6 +16,17 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import time
+import os
+
+class FileUtil:
+
+    @classmethod
+    def append_time_to_path(cls, path):
+        fs = os.path.split(path)
+        f = str(time.ctime(time.time())).replace(' ','_') + '_' + fs[1]
+        return os.path.join(fs[0], f)
+    
 
 class Fract:
 
