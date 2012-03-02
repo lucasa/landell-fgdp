@@ -149,7 +149,7 @@ class MicroblogOverlayUI:
 
     def _make_config(self):
         config = {}
-        config['user'] = self.username
+        config['username'] = self.username
         config['hashtag'] = self.hashtag
         config['valign'] = self.valign
         config['interval'] = self.interval
@@ -209,6 +209,7 @@ class MicroblogOverlayUI:
             
         if self.sltv.playing:
             self.update_status = UpdateStatus(self.update_config)
+            self.update_status.set_username(self._get_username())
             self.update_status.set_hashtag(self._get_hashtag())
             self.update_status.set_interval(self._get_interval())
             self.update_status.start()
@@ -220,6 +221,7 @@ class MicroblogOverlayUI:
         self.button.set_sensitive(True)
         if not self.update_status:
             self.update_status = UpdateStatus(self.update_config)
+            self.update_status.set_username(self._get_username())
             self.update_status.set_hashtag(self._get_hashtag())
             self.update_status.set_interval(self._get_interval())
             self.update_status.start()
@@ -261,7 +263,7 @@ class UpdateStatus(Thread):
         self.active = False
         #print "monitoring thread stopped"
     
-    def set_user(self, user):
+    def set_username(self, user):
         if user and len(user) > 0:
             self.user = user
     
