@@ -56,6 +56,10 @@ class MicroblogOverlayUI:
         self.username_selector_entry = self.interface.get_object(
             "username_entry"
         )
+        
+        self.show_selector_entry = self.interface.get_object(
+            "show_entry"
+        )
 
         # valign
         self.top_button = self.interface.get_object("top_toolbutton")
@@ -93,6 +97,7 @@ class MicroblogOverlayUI:
         self.update_status = None
         self.hashtag = ""
         self.username = ""
+        self.show_time = ""
         self.valign = None
         self.update_interval = 5.5
 
@@ -113,6 +118,8 @@ class MicroblogOverlayUI:
                 self._set_interval(config_item['interval'])
             if "username" in config_item:
                 self._set_interval(config_item['username'])
+            if "show" in config_item:
+                self._set_show(config_item['show'])
 
     def _set_valign(self, valign):
         self.valign = valign
@@ -136,6 +143,12 @@ class MicroblogOverlayUI:
         self.interval_selector_entry.set_text("")
         if self.interval:
             self.interval_selector_entry.set_text(interval)
+            
+    def _set_show(self, show):
+        self.show_time = show
+        self.show_selector_entry.set_text("")
+        if self.show_time:
+            self.show_selector_entry.set_text(show)
         
     def on_vertical_changed(self, widget, current):
         name = current.get_name()
@@ -153,6 +166,7 @@ class MicroblogOverlayUI:
         config['hashtag'] = self.hashtag
         config['valign'] = self.valign
         config['interval'] = self.interval
+        config['show'] = self.show_time
         return config
 
     def save(self):
@@ -166,9 +180,12 @@ class MicroblogOverlayUI:
 
     def _get_interval(self):
          return self.interval_selector_entry.get_text()
+         
+    def _get_show(self):
+         return self.show_selector_entry.get_text()
 
-    def update_config(self, text, img):
-        font = 20
+    def update_config(self, text, img, user):
+        font = 18
         font = font - len(text)/12
         if font < 10:
             font = 10
@@ -198,7 +215,9 @@ class MicroblogOverlayUI:
                 i = i+1
         
         if len(text) > 0 and text != ' ':
-            svg = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect x="52" y="10" width="600" height="50" fill="white" style="fill-opacity:0.7"/><text x="60" y="25" fill="black" font-size="'+str(font)+'">'+text+'</text><image x="5" y="10" width="50" height="50" xlink:href="'+img+'" /></svg>'
+            if user:
+                user = '@'+user
+            svg = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect x="52" y="10" width="600" height="50" fill="white" style="fill-opacity:0.7"/><text x="60" y="25" fill="black" font-size="'+str(font)+'">'+text+'</text><image x="5" y="10" width="50" height="50" xlink:href="'+img+'" /><text x="5" y="75" fill="red" font-size="12">'+user+'</text></svg>'
         else:
             svg = '<svg width="100%" height="100%"></svg>'
         self.sltv.rsvg.set_property("data", svg)
@@ -212,6 +231,7 @@ class MicroblogOverlayUI:
             self.update_status.set_username(self._get_username())
             self.update_status.set_hashtag(self._get_hashtag())
             self.update_status.set_interval(self._get_interval())
+            self.update_status.set_show(self._get_show())
             self.update_status.start()
 
     def _preplay(self, sltv):
@@ -224,6 +244,7 @@ class MicroblogOverlayUI:
             self.update_status.set_username(self._get_username())
             self.update_status.set_hashtag(self._get_hashtag())
             self.update_status.set_interval(self._get_interval())
+            self.update_status.set_show(self._get_show())
             self.update_status.start()
 
     def _stopped(self, sltv):
@@ -238,6 +259,7 @@ class MicroblogOverlayUI:
         self._set_hashtag("")
         self._set_username("")
         self._set_interval("")
+        self._set_show("")
         if self.update_status:
             self.update_status.stop()
             self.update_status = None
@@ -253,13 +275,14 @@ class UpdateStatus(Thread):
         self.user = user
         self.hashtag = tag
         self.interval = 5.0
+        self.show = 5.0
         self.file_out = "/tmp/_landell_microblog_avatar.png"
         self.callback = callback
         self.api = twitter.Api()
         self.active = False
     
     def stop(self):
-        self.callback("", "")
+        self.callback("", "", "")
         self.active = False
         #print "monitoring thread stopped"
     
@@ -275,6 +298,10 @@ class UpdateStatus(Thread):
         if interval and len(interval) > 0:
             self.interval = float(interval)
 
+    def set_show(self, show):
+        if show and len(show) > 0:
+            self.show = float(show)
+
     def run(self):
         statuses = []
         self.active = True
@@ -282,23 +309,28 @@ class UpdateStatus(Thread):
             if self.user:
                 statuses = self.api.GetUserTimeline(self.user)
             elif self.hashtag:
-                statuses = self.api.GetSearch(self.hashtag, per_page=50)
+                statuses = self.api.GetSearch(self.hashtag, per_page=30)
             
             i = 0
+            print "Loaded", len(statuses), "profiles"
             for s in statuses:
                 if self.active:
-                    #try:
-                    #    print s.AsJsonString()
-                    #except:
-                    #    pass
+                    try:
+                        print i, s.AsJsonString()
+                    except:
+                        pass
                     url = s.user.profile_image_url
                     text = s.text
-                    self.callback("", "")
+                    self.callback("", "", "")
                     if self.download(url, self.file_out):
+                        if s.user.name:
+                            name = s.user.name
+                        else:
+                            name = s.user.screen_name
                         time.sleep(self.interval)
-                        self.callback(text, self.file_out)
-                        time.sleep(self.interval)
-                    i = i+1
+                        self.callback(text, self.file_out, name)
+                        time.sleep(self.show)
+                i = i+1
             time.sleep(self.interval)
             
     def download(self, url, fileName=None):
