@@ -60,6 +60,14 @@ class MicroblogOverlayUI:
         self.show_selector_entry = self.interface.get_object(
             "show_entry"
         )
+        
+        self.api_selector_combo = self.interface.get_object(
+            "api_combobox"
+        )
+        try:
+            twitter.Api(base_url="http://identi.ca/api")
+        except:
+            self.api_selector_combo.set_sensitive(False)
 
         # valign
         self.top_button = self.interface.get_object("top_toolbutton")
@@ -98,14 +106,16 @@ class MicroblogOverlayUI:
         self.hashtag = ""
         self.username = ""
         self.show_time = ""
+    	self.interval = ""
         self.valign = None
-        self.update_interval = 5.5
+
+        self.apis_urls = ["https://api.twitter.com/1", "http://identi.ca/api"]
+        self._create_api_combobox(self.api_selector_combo, self.apis_urls)
 
     def _set_config(self):
         self.config = config.config
         self.section = "Settings"
         self.item = "Twitter Overlay"
-
 
     def _load_config(self):
         config_item = self.config.get_item(self.section, self.item)
@@ -113,13 +123,23 @@ class MicroblogOverlayUI:
             if "hashtag" in config_item:
                 self._set_hashtag(config_item['hashtag'])
             if "valign" in config_item:
-                self._set_valign(config_item['valign'])
+                self._set_valign(config_item['microblog_valign'])
             if "interval" in config_item:
                 self._set_interval(config_item['interval'])
             if "username" in config_item:
                 self._set_interval(config_item['username'])
             if "show" in config_item:
                 self._set_show(config_item['show'])
+
+    def _create_api_combobox(self, combobox, urls):
+        liststore = gtk.ListStore(gobject.TYPE_STRING)
+        combobox.set_model(liststore)
+        cell = gtk.CellRendererText()
+        combobox.pack_start(cell, True)
+        combobox.add_attribute(cell, 'text', 0)
+        for url in urls:
+            liststore.append((url,))
+        combobox.set_active(0)
 
     def _set_valign(self, valign):
         self.valign = valign
@@ -164,7 +184,7 @@ class MicroblogOverlayUI:
         config = {}
         config['username'] = self.username
         config['hashtag'] = self.hashtag
-        config['valign'] = self.valign
+        config['microblog_valign'] = self.valign
         config['interval'] = self.interval
         config['show'] = self.show_time
         return config
@@ -227,7 +247,7 @@ class MicroblogOverlayUI:
             self.update_status.stop()
             
         if self.sltv.playing:
-            self.update_status = UpdateStatus(self.update_config)
+            self.update_status = UpdateStatus(self.update_config, self.api_selector_combo.get_active_text())
             self.update_status.set_username(self._get_username())
             self.update_status.set_hashtag(self._get_hashtag())
             self.update_status.set_interval(self._get_interval())
@@ -240,7 +260,7 @@ class MicroblogOverlayUI:
     def _playing(self, sltv):
         self.button.set_sensitive(True)
         if not self.update_status:
-            self.update_status = UpdateStatus(self.update_config)
+            self.update_status = UpdateStatus(self.update_config, self.api_selector_combo.get_active_text())
             self.update_status.set_username(self._get_username())
             self.update_status.set_hashtag(self._get_hashtag())
             self.update_status.set_interval(self._get_interval())
@@ -269,16 +289,22 @@ class MicroblogOverlayUI:
         
 class UpdateStatus(Thread):
 
-    def __init__(self, callback, user=None, tag=None):
+    def __init__(self, callback, api_url, user=None, tag=None):
         Thread.__init__(self)
         self.setDaemon(True)
         self.user = user
         self.hashtag = tag
         self.interval = 5.0
         self.show = 5.0
+        self.service_url = api_url
         self.file_out = "/tmp/_landell_microblog_avatar.png"
         self.callback = callback
-        self.api = twitter.Api()
+    	try:
+	        self.api = twitter.Api(base_url=self.service_url)
+        except:
+            print "Microblog monitor has no support to the Identi.ca API. Please update the python-twitter library to a version >= 0.8"
+            self.api = twitter.Api()
+	    
         self.active = False
     
     def stop(self):
@@ -312,13 +338,13 @@ class UpdateStatus(Thread):
                 statuses = self.api.GetSearch(self.hashtag, per_page=30)
             
             i = 0
-            print "Loaded", len(statuses), "profiles"
+            print 'Microblog monitor loaded', len(statuses), 'profiles from user [', self.user, '] hashtag [', self.hashtag, '] network [', self.service_url, ']'
             for s in statuses:
                 if self.active:
-                    try:
-                        print i, s.AsJsonString()
-                    except:
-                        pass
+                    #try:
+                    #    print i, s.AsJsonString()
+                    #except:
+                    #    pass
                     url = s.user.profile_image_url
                     text = s.text
                     self.callback("", "", "")

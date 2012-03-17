@@ -4,7 +4,7 @@
   <object class="GtkTable" id="vbox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="n_rows">6</property>
+    <property name="n_rows">7</property>
     <property name="n_columns">2</property>
     <property name="column_spacing">10</property>
     <property name="row_spacing">6</property>
@@ -16,8 +16,8 @@
         <property name="label" translatable="yes">Interval (in sec):</property>
       </object>
       <packing>
-        <property name="top_attach">1</property>
-        <property name="bottom_attach">2</property>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
         <property name="x_options">GTK_EXPAND</property>
         <property name="y_options">GTK_EXPAND</property>
       </packing>
@@ -30,8 +30,8 @@
         <property name="label" translatable="yes">Twitter User:</property>
       </object>
       <packing>
-        <property name="top_attach">3</property>
-        <property name="bottom_attach">4</property>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
         <property name="x_options">GTK_EXPAND</property>
         <property name="y_options">GTK_EXPAND</property>
       </packing>
@@ -47,8 +47,8 @@
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">3</property>
-        <property name="bottom_attach">4</property>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
         <property name="x_options">GTK_EXPAND</property>
       </packing>
     </child>
@@ -60,8 +60,8 @@
         <property name="label" translatable="yes">Hashtag:</property>
       </object>
       <packing>
-        <property name="top_attach">4</property>
-        <property name="bottom_attach">5</property>
+        <property name="top_attach">5</property>
+        <property name="bottom_attach">6</property>
         <property name="x_options">GTK_EXPAND</property>
         <property name="y_options">GTK_EXPAND</property>
       </packing>
@@ -77,8 +77,8 @@
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">4</property>
-        <property name="bottom_attach">5</property>
+        <property name="top_attach">5</property>
+        <property name="bottom_attach">6</property>
         <property name="x_options">GTK_EXPAND</property>
       </packing>
     </child>
@@ -94,8 +94,8 @@
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">1</property>
-        <property name="bottom_attach">2</property>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
         <property name="x_options">GTK_EXPAND</property>
       </packing>
     </child>
@@ -154,22 +154,22 @@
     </child>
     <child>
       <object class="GtkButton" id="clear_button">
-        <property name="label" translatable="yes">Clear</property>
+        <property name="label" translatable="yes">     Clear     </property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
         <property name="use_action_appearance">False</property>
       </object>
       <packing>
-        <property name="top_attach">5</property>
-        <property name="bottom_attach">6</property>
+        <property name="top_attach">6</property>
+        <property name="bottom_attach">7</property>
         <property name="x_options">GTK_EXPAND</property>
         <property name="y_options">GTK_EXPAND</property>
       </packing>
     </child>
     <child>
       <object class="GtkButton" id="apply_button">
-        <property name="label" translatable="yes">Apply</property>
+        <property name="label" translatable="yes">     Apply     </property>
         <property name="visible">True</property>
         <property name="sensitive">False</property>
         <property name="can_focus">True</property>
@@ -179,8 +179,8 @@
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">5</property>
-        <property name="bottom_attach">6</property>
+        <property name="top_attach">6</property>
+        <property name="bottom_attach">7</property>
         <property name="x_options">GTK_EXPAND</property>
         <property name="y_options"></property>
       </packing>
@@ -193,8 +193,8 @@
         <property name="label" translatable="yes">Show time (in sec):</property>
       </object>
       <packing>
-        <property name="top_attach">2</property>
-        <property name="bottom_attach">3</property>
+        <property name="top_attach">3</property>
+        <property name="bottom_attach">4</property>
         <property name="x_options">GTK_EXPAND</property>
         <property name="y_options">GTK_EXPAND</property>
       </packing>
@@ -211,9 +211,35 @@
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">2</property>
-        <property name="bottom_attach">3</property>
+        <property name="top_attach">3</property>
+        <property name="bottom_attach">4</property>
         <property name="x_options">GTK_EXPAND</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="api_label1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="xalign">0</property>
+        <property name="label" translatable="yes">API server:</property>
+      </object>
+      <packing>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
+        <property name="x_options">GTK_EXPAND</property>
+        <property name="y_options">GTK_EXPAND</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkComboBox" id="api_combobox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
       </packing>
     </child>
   </object>
