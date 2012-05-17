@@ -24,6 +24,9 @@ from twisted.protocols.basic import LineReceiver
 
 from Crypto.Hash import SHA
 
+import gst, pygst
+pygst.require("0.10")
+
 __version__ = "$Rev$"
 
 PROTOCOL_NAME = "FGDP"
@@ -493,8 +496,16 @@ class FGDPClientFactory(ReconnectingClientFactory):
         return p
 
     def retry(self, connector=None):
-        self.info("Trying reconnection with FGDP peer")
-        return ReconnectingClientFactory.retry(self, connector)
+        state = self.gstElement.get_state(timeout=100*gst.MSECOND)
+        #print "FGDPClientFactory.retry", state
+        #print "gst.STATE_PLAYING", state[1] == gst.STATE_PLAYING
+        #print "gst.STATE_PAUSED", state[1] == gst.STATE_PAUSED
+        #print "gst.STATE_READY", state[1] == gst.STATE_READY
+        #print "gst.STATE_NULL", state[1] == gst.STATE_NULL
+        #print "gst.STATE_VOID_PENDING", state[1] == gst.STATE_VOID_PENDING
+        if state[1] == gst.STATE_PLAYING or state[1] == gst.STATE_READY:
+            self.info("Trying reconnection with FGDP peer")
+            return ReconnectingClientFactory.retry(self, connector)
         
     def info(self, log):
         print log

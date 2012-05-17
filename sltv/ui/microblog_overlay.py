@@ -294,7 +294,7 @@ class UpdateStatus(Thread):
         self.setDaemon(True)
         self.user = user
         self.hashtag = tag
-        self.interval = 5.0
+        self.interval = 30.0
         self.show = 5.0
         self.service_url = api_url
         self.file_out = "/tmp/_landell_microblog_avatar.png"
@@ -337,8 +337,10 @@ class UpdateStatus(Thread):
             elif self.hashtag:
                 statuses = self.api.GetSearch(self.hashtag, per_page=30)
             
+            if self.user or self.hashtag:
+                print 'Microblog monitor loaded', len(statuses), 'profiles from user [', self.user, '] hashtag [', self.hashtag, '] network [', self.service_url, ']'
+            
             i = 0
-            print 'Microblog monitor loaded', len(statuses), 'profiles from user [', self.user, '] hashtag [', self.hashtag, '] network [', self.service_url, ']'
             for s in statuses:
                 if self.active:
                     #try:
