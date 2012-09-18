@@ -1,0 +1,44 @@
+
+Landell-SERPRO is a fork of the Landell tool adapted to be included in the streaming setup of SERPRO.
+
+== Installing landell-serpro at Ubuntu 10.04 ==
+
+Install the Ubuntu dependencies:
+
+    sudo apt-get install python-twitter
+    sudo apt-get install python-configobj
+
+Add this Debian (Sid) repository to get the Holoscopio plugins for GStreamer:
+
+    deb http://debian.holoscopio.com/sltv/ ./
+    deb-src http://debian.holoscopio.com/sltv/ ./
+
+Install Holoscopio plugins for GStreamer:
+
+    sudo apt-get install gstreamer0.10-hplugins
+
+Add Gstreamer Depelopers PPA:
+
+    sudo add-apt-repository ppa:gstreamer-developers/ppa
+    
+Run synaptic and install/update all gstreamer0.10 packages: ffmpeg, good, bad, ugly, etc. (you can skip development and debug versions).
+
+Install compile tools:
+
+    sudo apt-get install git-core autoconf automake
+
+Clone the landell-serpro git repositoty:
+
+    git clone git://gitorious.serpro/landell-serpro/landell.git
+    
+Get into the repository, compile and install:
+
+    cd landell
+    ./autogen.sh
+    ./configure
+    make
+    sudo make install
+    
+Run it and have fun:
+
+    landell
