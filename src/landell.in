@@ -22,13 +22,24 @@ sys.path.append("@LIBDIR@")
 
 import gobject
 import gtk
+import os
+
+from twisted.internet import gtk2reactor
+gtk2reactor.install()
+from twisted.internet import reactor
+
 import sltv.ui
 
 def main():
     sltv.ui.SltvUI()
     gobject.threads_init()
     gtk.gdk.threads_init()
-    gtk.main()
+    
+    try:
+        reactor.run()
+    except:
+        gtk.main()
 
 if __name__ == '__main__':
     main()
+

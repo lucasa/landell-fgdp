@@ -30,6 +30,7 @@ sltvlib_DATA = \
 	watermark.py \
 	videobalance.py \
 	output_item.py \
-	microblog_overlay.py
+	microblog_overlay.py \
+	fvumeter.py
 
 EXTRA_DIST = $(sltvlib_DATA)
